@@ -6,8 +6,7 @@ import { UsersModule } from './users/users.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { ReservationsModule } from './reservations/reservations.module';
 import { PrismaModule } from './prisma/primsa.module';
-import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './auth/jwt.strategy';
+import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
   imports: [
@@ -18,6 +17,6 @@ import { JwtStrategy } from './auth/jwt.strategy';
     PrismaModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, RolesGuard],
 })
 export class AppModule {}

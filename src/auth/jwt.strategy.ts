@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -13,12 +13,33 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: { sub: string; email: string }) {
-    // Busca o usuário no banco e retorna (fica disponível no request.user)
+  async validate(payload: {
+    sub: string;
+    email: string;
+    name: string;
+    role: string;
+  }) {
+    // Busca o usuário atualizado no banco
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
-      select: { id: true, email: true, name: true, role: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+      },
     });
-    return user;
+
+    if (!user) {
+      return null;
+    }
+
+    // Retorna o usuário com a role (vai ficar em request.user)
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
   }
 }
