@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Usuários do sistema
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(CLIENTE) // ADMIN ou CLIENTE
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reservations Reservation[]
+}
+
+// Horários disponíveis na academia
+model Schedule {
+  id          String   @id @default(uuid())
+  date        DateTime // Dia do horário (ex: 2025-01-20)
+  hour        Int // Hora (8, 9, 10... até 22)
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  reservations Reservation[]
+}
+
+// Reservas feitas pelos clientes
+model Reservation {
+  id         String    @id @default(uuid())
+  userId     String
+  scheduleId String
+  status     Status    @default(ATIVA) // ATIVA, CANCELADA, CONCLUIDA
+  reservedAt DateTime  @default(now())
+  canceledAt DateTime?
+
+  user     User     @relation(fields: [userId], references: [id])
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
+
+  @@unique([scheduleId]) // Um horário só pode ter uma reserva
+}
+
+enum Role {
+  ADMIN
+  CLIENTE
+}
+
+enum Status {
+  ATIVA
+  CANCELADA
+  CONCLUIDA
+}
