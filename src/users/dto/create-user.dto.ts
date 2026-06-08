@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsString,
@@ -13,25 +14,45 @@ export enum UserRole {
 }
 
 export class CreateUserDto {
+  @ApiProperty({
+    example: 'usuario@academia.com',
+    description: 'Email do usuário',
+  })
   @IsEmail({}, { message: 'Email inválido' })
-  @MaxLength(100, { message: 'Email muito longo' })
+  @MaxLength(100)
   email: string;
 
-  @IsString({ message: 'Nome deve ser texto' })
-  @MinLength(3, { message: 'Nome deve ter no mínimo 3 caracteres' })
-  @MaxLength(100, { message: 'Nome muito longo' })
+  @ApiProperty({ example: 'João Silva', description: 'Nome completo' })
+  @IsString()
+  @MinLength(3)
+  @MaxLength(100)
   name: string;
 
-  @IsString({ message: 'Senha deve ser texto' })
-  @MinLength(6, { message: 'Senha deve ter no mínimo 6 caracteres' })
+  @ApiProperty({
+    example: '123456',
+    description: 'Senha (mínimo 6 caracteres)',
+  })
+  @IsString()
+  @MinLength(6)
   password: string;
 
+  @ApiProperty({
+    example: '11999999999',
+    required: false,
+    description: 'Telefone',
+  })
   @IsOptional()
   @IsString()
-  @MaxLength(20, { message: 'Telefone muito longo' })
+  @MaxLength(20)
   phone?: string;
 
+  @ApiProperty({
+    enum: UserRole,
+    example: UserRole.CLIENTE,
+    required: false,
+    description: 'Função do usuário',
+  })
   @IsOptional()
-  @IsEnum(UserRole, { message: 'Role deve ser ADMIN ou CLIENTE' })
+  @IsEnum(UserRole)
   role?: UserRole;
 }

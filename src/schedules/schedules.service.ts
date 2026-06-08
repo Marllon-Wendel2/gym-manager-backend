@@ -3,13 +3,10 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import {
-  BlockDayDto,
-  BlockHourDto,
-  UnblockHourDto,
-} from './dto/block-schedule.dto';
+
 import { PrismaService } from '../prisma/prisma.service';
 import { DaySchedule, HourSchedule } from './dto/calendar-response';
+import { BlockDayDto, BlockHourDto } from './dto/block-schedule.dto';
 
 @Injectable()
 export class SchedulesService {
@@ -139,7 +136,7 @@ export class SchedulesService {
   }
 
   // ⭐ DESBLOQUEAR HORÁRIO ESPECÍFICO (CORRIGIDO)
-  async unblockSpecificHour(unblockHourDto: UnblockHourDto) {
+  async unblockSpecificHour(unblockHourDto: BlockHourDto) {
     const { startDate, endDate } = this.getDayRange(unblockHourDto.date);
 
     const schedule = await this.prisma.schedule.findFirst({
